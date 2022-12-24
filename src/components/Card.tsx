@@ -9,7 +9,6 @@ type type = {
 };
 
 const Card = ({ pokemon }: any) => {
-  console.log(pokemon);
   return (
     <div className="card">
       <div className="cardImg">
@@ -18,11 +17,11 @@ const Card = ({ pokemon }: any) => {
       <h3 className="cardName">{pokemon.name}</h3>
       <div className="cardTypes">
         <div>タイプ</div>
-        {pokemon.types.map((type: type) => {
+        {pokemon.types.map(({type}: type) => {
           return (
-            <div>
+            <div key={type.name}>
               <div>
-                <span className="typeNmae">{type.type.name}</span>
+                <span className="typeNmae">{type.name}</span>
               </div>
             </div>
           );

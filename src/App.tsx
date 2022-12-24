@@ -1,47 +1,9 @@
 import { useEffect, useState } from "react";
+import { resourceLimits } from "worker_threads";
 import "./App.css";
 import Card from "./components/Card";
 import Navbar from "./components/Navbar/Navbar";
 import { getAllPokemon, getPokemon } from "./utils/pokemon";
-
-type data = {
-  count: number;
-  next: string;
-  previous: string;
-  results: result;
-};
-
-type pokemonData = {
-  abilities: Object[];
-  base_experience: number;
-  forms: Object[];
-  game_indices: Object[];
-  height: number;
-  held_items: Object[];
-  id: number;
-  is_default: boolean;
-  location_area_encounters: string;
-  moves: Object[];
-  name: string;
-  order: number;
-  past_types: [];
-  species: {
-    name: string;
-    url: string;
-  };
-  sprites: {
-    back_default: string;
-    back_female: string;
-    back_shiny: string;
-    back_shiny_female: string;
-    front_default: string;
-    other: Object;
-    versions: Object;
-  };
-  stats: Object[];
-  types: Object[];
-  weight: number;
-};
 
 type result = {
   name: string;
@@ -52,16 +14,18 @@ const App = () => {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
   const [loading, setLoading] = useState(true);
   const [pokemonData, setPokemonData] = useState([]);
+  const [nextURL, setNextURL] = useState<string>("");
+  const [previousURL, setPreviousURL] = useState<string>("");
 
   useEffect(() => {
     const fetchPokemonData = async () => {
       // ポケモンデータ取得
       let res = await getAllPokemon(initialURL);
-      // ??? この一行を記載せず、res.resultsとするとエラーが出る
-      let results = JSON.parse(JSON.stringify(res)).results;
-
       // 各ポケモンの詳細データを取得
-      loadPokemon(results);
+      loadPokemon(res.results);
+      setNextURL(res.next);
+      setPreviousURL(res.previous);
+      // console.log(next);
       setLoading(false);
     };
     fetchPokemonData();
@@ -76,25 +40,47 @@ const App = () => {
     );
     setPokemonData(_pokemonData);
   };
-  console.log(pokemonData);
+  // console.log(pokemonData);
+
+  const handleNextPage = async () => {
+    setLoading(true);
+    let data = await getAllPokemon(nextURL);
+    await loadPokemon(data.results);
+    setNextURL(data.next);
+    setPreviousURL(data.previous);
+    setLoading(false);
+  };
+  const handlePrevPage = async () => {
+    if (!previousURL) return;
+    setLoading(true);
+    let data = await getAllPokemon(previousURL);
+    await loadPokemon(data.results);
+    setNextURL(data.next);
+    setPreviousURL(data.previous);
+    setLoading(false);
+  };
 
   return (
     <>
-    <Navbar />
-    <div className="App">
-      {loading ? (
-        <h1>ロード中・・・</h1>
-      ) : (
-        <>
-          <div className="pokemonCardContainer">
-            {pokemonData.map((pokemon ,i) => {
-              return <Card key={i} pokemon={pokemon} />;
-            })}
-          </div>
-        </>
-      )}
-    </div>
-  </>
+      <Navbar />
+      <div className="App">
+        {loading ? (
+          <h1>ロード中・・・</h1>
+        ) : (
+          <>
+            <div className="pokemonCardContainer">
+              {pokemonData.map((pokemon, i) => {
+                return <Card key={i} pokemon={pokemon} />;
+              })}
+            </div>
+            <div className="btn">
+              <button onClick={handlePrevPage}>前へ</button>
+              <button onClick={handleNextPage}>次へ</button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 
