@@ -1,16 +1,16 @@
-type AllPokemonData = {
+export type AllPokemonData = {
   count: number,
   next: string,
   previous: string,
   results: Result[]
 }
 
-type Result = {
+export type Result = {
   name: string,
   url: string
 }
 
-type PokemonData = {
+export type PokemonData = {
   abilities: Object[];
   base_experience: number;
   forms: Object[];
@@ -42,18 +42,9 @@ type PokemonData = {
   weight: number;
 };
 
-export const getAllPokemon = (url: string) => {
-  return new Promise<AllPokemonData>((resolve, reject) => {
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => resolve(data));
-  });
-}
-
-export const getPokemon = (url: string) => {
-  return new Promise<PokemonData>((resolve, reject) => {
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => resolve(data));
-  });
-}
+export type PokemonType = {
+  type: {
+    name: string;
+    url: string;
+  };
+};

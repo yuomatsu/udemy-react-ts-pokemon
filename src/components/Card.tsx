@@ -1,23 +1,17 @@
-import React from "react";
 import "./Card.css";
-
-type type = {
-  type: {
-    name: string;
-    url: string;
-  };
-};
+import { PokemonType } from "../types/type";
 
 const Card = ({ pokemon }: any) => {
+  // TODO: 本当はanyをやめたい
   return (
     <div className="card">
       <div className="cardImg">
-        <img src={pokemon.sprites.front_default} />
+        <img src={pokemon.sprites.front_default} alt="ポケモンの画像" />
       </div>
       <h3 className="cardName">{pokemon.name}</h3>
       <div className="cardTypes">
         <div>タイプ</div>
-        {pokemon.types.map(({type}: type) => {
+        {pokemon.types.map(({ type }: PokemonType) => {
           return (
             <div key={type.name}>
               <div>

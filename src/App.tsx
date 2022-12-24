@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
-import { resourceLimits } from "worker_threads";
 import "./App.css";
 import Card from "./components/Card";
 import Navbar from "./components/Navbar/Navbar";
 import { getAllPokemon, getPokemon } from "./utils/pokemon";
-
-type result = {
-  name: string;
-  url: string;
-};
+import { Result } from "./types/type";
+import { PokemonData } from "./types/type";
 
 const App = () => {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
   const [loading, setLoading] = useState(true);
-  const [pokemonData, setPokemonData] = useState([]);
+  const [pokemonData, setPokemonData] = useState<PokemonData[]>([]);
   const [nextURL, setNextURL] = useState<string>("");
   const [previousURL, setPreviousURL] = useState<string>("");
 
@@ -25,14 +21,13 @@ const App = () => {
       loadPokemon(res.results);
       setNextURL(res.next);
       setPreviousURL(res.previous);
-      // console.log(next);
       setLoading(false);
     };
     fetchPokemonData();
   }, []);
 
-  const loadPokemon = async (data: result[]) => {
-    let _pokemonData: any = await Promise.all(
+  const loadPokemon = async (data: Result[]) => {
+    let _pokemonData = await Promise.all(
       data.map((pokemon) => {
         let pokemonRecord = getPokemon(pokemon.url);
         return pokemonRecord;
@@ -40,7 +35,6 @@ const App = () => {
     );
     setPokemonData(_pokemonData);
   };
-  // console.log(pokemonData);
 
   const handleNextPage = async () => {
     setLoading(true);
